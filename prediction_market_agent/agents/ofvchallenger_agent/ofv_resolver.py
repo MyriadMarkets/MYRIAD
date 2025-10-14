@@ -17,7 +17,7 @@ from prediction_market_agent.agents.ofvchallenger_agent.ofv_models import (
 )
 from prediction_market_agent.utils import APIKeys
 
-DEFAULT_OPENAI_MODEL = "gpt-4-0125-preview"
+DEFAULT_OPENAI_MODEL = "gpt-5"
 
 
 @observe()

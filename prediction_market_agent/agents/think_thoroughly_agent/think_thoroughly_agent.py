@@ -349,8 +349,8 @@ class ThinkThoroughlyBase(ABC):
 
 class ThinkThoroughlyWithItsOwnResearch(ThinkThoroughlyBase):
     identifier = THINK_THOROUGHLY
-    model = "gpt-4-turbo-2024-04-09"
-    model_for_generate_prediction_for_one_outcome = "gpt-4-turbo-2024-04-09"
+    model = "gpt-5"
+    model_for_generate_prediction_for_one_outcome = "gpt-5"
 
     @staticmethod
     def generate_prediction_for_one_outcome(
@@ -417,8 +417,8 @@ class ThinkThoroughlyWithItsOwnResearch(ThinkThoroughlyBase):
 
 class ThinkThoroughlyWithPredictionProphetResearch(ThinkThoroughlyBase):
     identifier = THINK_THOROUGHLY_PROPHET
-    model = "gpt-4-turbo-2024-04-09"
-    model_for_generate_prediction_for_one_outcome = "gpt-4o-2024-08-06"
+    model = "gpt-5"
+    model_for_generate_prediction_for_one_outcome = "gpt-5"
 
     @staticmethod
     def generate_prediction_for_one_outcome(

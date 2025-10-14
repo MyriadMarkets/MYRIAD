@@ -1,3 +1,5 @@
+import typing as t
+
 from prediction_market_agent_tooling.deploy.agent import DeployableTraderAgent
 from prediction_market_agent_tooling.deploy.betting_strategy import (
     BettingStrategy,
@@ -119,18 +121,23 @@ class DeployablePredictionProphetGPT4oAgent(DeployableTraderAgentER):
     agent: PredictionProphetAgent
 
     def get_betting_strategy(self, market: AgentMarket) -> BettingStrategy:
-        return FullBinaryKellyBettingStrategy(
-            max_position_amount=get_maximum_possible_bet_amount(
-                min_=USD(1),
-                max_=USD(5),
-                trading_balance=market.get_trade_balance(APIKeys()),
-            ),
-            max_price_impact=0.7,
+        # Use Kelly only where fully supported (Omen). Fallback to parent on others (e.g., Polymarket).
+        return (
+            FullBinaryKellyBettingStrategy(
+                max_position_amount=get_maximum_possible_bet_amount(
+                    min_=USD(1),
+                    max_=USD(5),
+                    trading_balance=market.get_trade_balance(APIKeys()),
+                ),
+                max_price_impact=0.7,
+            )
+            if isinstance(market, OmenAgentMarket)
+            else super().get_betting_strategy(market)
         )
 
     def load(self) -> None:
         super().load()
-        model = "gpt-4o-2024-08-06"
+        model = "gpt-5"
         api_keys = APIKeys()
 
         self.agent = PredictionProphetAgent(
@@ -139,14 +146,12 @@ class DeployablePredictionProphetGPT4oAgent(DeployableTraderAgentER):
                     model,
                     provider=get_openai_provider(api_key=api_keys.openai_api_key),
                 ),
-                model_settings=ModelSettings(temperature=0.7),
             ),
             prediction_agent=Agent(
                 OpenAIModel(
                     model,
                     provider=get_openai_provider(api_key=api_keys.openai_api_key),
                 ),
-                model_settings=ModelSettings(temperature=0.0),
             ),
             include_reasoning=True,
             logger=logger,
@@ -178,7 +183,7 @@ class DeployablePredictionProphetGPT4oAgentCategorical(
 
     def load(self) -> None:
         super().load()
-        model = "gpt-4o-2024-08-06"
+        model = "gpt-5"
         api_keys = APIKeys()
 
         self.agent = PredictionProphetAgent(
@@ -187,18 +192,63 @@ class DeployablePredictionProphetGPT4oAgentCategorical(
                     model,
                     provider=get_openai_provider(api_key=api_keys.openai_api_key),
                 ),
-                model_settings=ModelSettings(temperature=0.7),
             ),
             prediction_agent=Agent(
                 OpenAIModel(
                     model,
                     provider=get_openai_provider(api_key=api_keys.openai_api_key),
                 ),
-                model_settings=ModelSettings(temperature=0.0),
             ),
             include_reasoning=True,
             logger=logger,
         )
+
+
+# Unified Prophet agents (use GPT-5 across the board)
+class DeployableProphetBinary(DeployablePredictionProphetGPT4oAgent):
+    """Unified binary Prophet agent (GPT-5)."""
+
+    def verify_market(self, market_type: MarketType, market: AgentMarket) -> bool:
+        try:
+            return super().verify_market(market_type, market)
+        except NotImplementedError:
+            logger.warning(
+                "Skipping prior-bet check: have_bet_on_market_since not implemented for this market type."
+            )
+            return True
+
+    def get_markets(
+        self,
+        market_type: MarketType,
+    ) -> t.Sequence[AgentMarket]:
+        # Filter to binary markets only to match Binary Kelly strategy
+        markets = super().get_markets(market_type)
+        return [m for m in markets if getattr(m, "is_binary", False)]
+
+
+class DeployableProphetCategorical(DeployablePredictionProphetGPT4oAgentCategorical):
+    """Unified categorical Prophet agent (GPT-5)."""
+
+    def verify_market(self, market_type: MarketType, market: AgentMarket) -> bool:
+        try:
+            return super().verify_market(market_type, market)
+        except NotImplementedError:
+            logger.warning(
+                "Skipping prior-bet check: have_bet_on_market_since not implemented for this market type."
+            )
+            return True
+
+    def get_markets(
+        self,
+        market_type: MarketType,
+    ) -> t.Sequence[AgentMarket]:
+        # Filter to categorical markets (not binary, not scalar)
+        markets = super().get_markets(market_type)
+        return [
+            m
+            for m in markets
+            if not getattr(m, "is_binary", False) and not getattr(m, "is_scalar", False)
+        ]
 
 
 class DeployableTraderAgentERScalar(DeployableTraderAgent):
@@ -237,7 +287,7 @@ class DeployablePredictionProphetGPT4oAgentScalar(DeployableTraderAgentERScalar)
 
     def load(self) -> None:
         super().load()
-        model = "gpt-4o-2024-08-06"
+        model = "gpt-5"
         api_keys = APIKeys()
 
         self.agent = PredictionProphetAgent(
@@ -246,7 +296,6 @@ class DeployablePredictionProphetGPT4oAgentScalar(DeployableTraderAgentERScalar)
                     model,
                     provider=get_openai_provider(api_key=api_keys.openai_api_key),
                 ),
-                model_settings=ModelSettings(temperature=0.7),
             ),
             prediction_agent=Agent(
                 TopNOpenAINModel(
@@ -254,7 +303,6 @@ class DeployablePredictionProphetGPT4oAgentScalar(DeployableTraderAgentERScalar)
                     n=5,
                     provider=get_openai_provider(api_key=api_keys.openai_api_key),
                 ),
-                model_settings=ModelSettings(temperature=0.7),
             ),
             include_reasoning=True,
             logger=logger,
@@ -286,7 +334,7 @@ class DeployablePredictionProphetGPT4oAgent_B(DeployableTraderAgentER):
 
     def load(self) -> None:
         super().load()
-        model = "gpt-4o-2024-08-06"
+        model = "gpt-5"
         api_keys = APIKeys()
 
         self.agent = PredictionProphetAgent(
@@ -297,14 +345,12 @@ class DeployablePredictionProphetGPT4oAgent_B(DeployableTraderAgentER):
                     model,
                     provider=get_openai_provider(api_key=api_keys.openai_api_key),
                 ),
-                model_settings=ModelSettings(temperature=0.7),
             ),
             prediction_agent=Agent(
                 OpenAIModel(
                     model,
                     provider=get_openai_provider(api_key=api_keys.openai_api_key),
                 ),
-                model_settings=ModelSettings(temperature=0.0),
             ),
             include_reasoning=True,
             logger=logger,
@@ -333,7 +379,7 @@ class DeployablePredictionProphetGPT4oAgent_C(DeployableTraderAgentER):
 
     def load(self) -> None:
         super().load()
-        model = "gpt-4o-2024-08-06"
+        model = "gpt-5"
         api_keys = APIKeys()
 
         self.agent = PredictionProphetAgent(
@@ -344,14 +390,12 @@ class DeployablePredictionProphetGPT4oAgent_C(DeployableTraderAgentER):
                     model,
                     provider=get_openai_provider(api_key=api_keys.openai_api_key),
                 ),
-                model_settings=ModelSettings(temperature=0.7),
             ),
             prediction_agent=Agent(
                 OpenAIModel(
                     model,
                     provider=get_openai_provider(api_key=api_keys.openai_api_key),
                 ),
-                model_settings=ModelSettings(temperature=0.0),
             ),
             include_reasoning=True,
             logger=logger,
@@ -427,7 +471,7 @@ class DeployablePredictionProphetGPT4ominiAgent(DeployableTraderAgentER):
 
     def load(self) -> None:
         super().load()
-        model = "gpt-4o-mini-2024-07-18"
+        model = "gpt-5-mini"
         api_keys = APIKeys()
 
         self.agent = PredictionProphetAgent(
@@ -436,14 +480,12 @@ class DeployablePredictionProphetGPT4ominiAgent(DeployableTraderAgentER):
                     model,
                     provider=get_openai_provider(api_key=api_keys.openai_api_key),
                 ),
-                model_settings=ModelSettings(temperature=0.7),
             ),
             prediction_agent=Agent(
                 OpenAIModel(
                     model,
                     provider=get_openai_provider(api_key=api_keys.openai_api_key),
                 ),
-                model_settings=ModelSettings(temperature=0.0),
             ),
             include_reasoning=True,
             logger=logger,
@@ -503,7 +545,7 @@ class DeployablePredictionProphetGPT4TurboPreviewAgent(DeployableTraderAgentER):
 
     def load(self) -> None:
         super().load()
-        model = "gpt-4-0125-preview"
+        model = "gpt-5"
         api_keys = APIKeys()
 
         self.agent = PredictionProphetAgent(
@@ -512,14 +554,12 @@ class DeployablePredictionProphetGPT4TurboPreviewAgent(DeployableTraderAgentER):
                     model,
                     provider=get_openai_provider(api_key=api_keys.openai_api_key),
                 ),
-                model_settings=ModelSettings(temperature=0.7),
             ),
             prediction_agent=Agent(
                 OpenAIModel(
                     model,
                     provider=get_openai_provider(api_key=api_keys.openai_api_key),
                 ),
-                model_settings=ModelSettings(temperature=0.0),
             ),
             include_reasoning=True,
             logger=logger,
@@ -541,7 +581,7 @@ class DeployablePredictionProphetGPT4TurboFinalAgent(DeployableTraderAgentER):
 
     def load(self) -> None:
         super().load()
-        model = "gpt-4-turbo-2024-04-09"
+        model = "gpt-5"
         api_keys = APIKeys()
 
         self.agent = PredictionProphetAgent(
@@ -550,14 +590,12 @@ class DeployablePredictionProphetGPT4TurboFinalAgent(DeployableTraderAgentER):
                     model,
                     provider=get_openai_provider(api_key=api_keys.openai_api_key),
                 ),
-                model_settings=ModelSettings(temperature=0.7),
             ),
             prediction_agent=Agent(
                 OpenAIModel(
                     model,
                     provider=get_openai_provider(api_key=api_keys.openai_api_key),
                 ),
-                model_settings=ModelSettings(temperature=0.0),
             ),
             include_reasoning=True,
             logger=logger,
@@ -582,7 +620,7 @@ class DeployableOlasEmbeddingOAAgent(DeployableTraderAgentER):
 
     def load(self) -> None:
         super().load()
-        model = DEFAULT_OPENAI_MODEL
+        model = "gpt-5"
         api_keys = APIKeys()
 
         self.agent = OlasAgent(
@@ -591,14 +629,12 @@ class DeployableOlasEmbeddingOAAgent(DeployableTraderAgentER):
                     model,
                     provider=get_openai_provider(api_key=api_keys.openai_api_key),
                 ),
-                model_settings=ModelSettings(temperature=0.5),
             ),
             prediction_agent=Agent(
                 OpenAIModel(
                     model,
                     provider=get_openai_provider(api_key=api_keys.openai_api_key),
                 ),
-                model_settings=ModelSettings(temperature=0.0),
             ),
             embedding_model=EmbeddingModel.openai,
             logger=logger,
@@ -620,8 +656,8 @@ class DeployablePredictionProphetGPTo1PreviewAgent(DeployableTraderAgentER):
 
     def load(self) -> None:
         super().load()
-        # o3 supports only temperature=1.0
-        model = "o3"  # Originally, this agent used o1-preview, but they deprecated it and removing from APIs.
+        # Switched from o3 to GPT-5 per repo-wide consolidation
+        model = "gpt-5"
         api_keys = APIKeys()
 
         self.agent = PredictionProphetAgent(
@@ -630,14 +666,12 @@ class DeployablePredictionProphetGPTo1PreviewAgent(DeployableTraderAgentER):
                     model,
                     provider=get_openai_provider(api_key=api_keys.openai_api_key),
                 ),
-                model_settings=ModelSettings(temperature=1.0),
             ),
             prediction_agent=Agent(
                 OpenAIModel(
                     model,
                     provider=get_openai_provider(api_key=api_keys.openai_api_key),
                 ),
-                model_settings=ModelSettings(temperature=1.0),
             ),
             include_reasoning=True,
             logger=logger,
@@ -660,8 +694,8 @@ class DeployablePredictionProphetGPTo1MiniAgent(DeployableTraderAgentER):
 
     def load(self) -> None:
         super().load()
-        # o4-mini supports only temperature=1.0
-        model = "o4-mini"  # Originally, this agent used o1-mini, but they deprecated it and removing from APIs.
+        # Switched from o4-mini to GPT-5 per repo-wide consolidation
+        model = "gpt-5"
         api_keys = APIKeys()
 
         self.agent = PredictionProphetAgent(
@@ -670,14 +704,12 @@ class DeployablePredictionProphetGPTo1MiniAgent(DeployableTraderAgentER):
                     model,
                     provider=get_openai_provider(api_key=api_keys.openai_api_key),
                 ),
-                model_settings=ModelSettings(temperature=1.0),
             ),
             prediction_agent=Agent(
                 OpenAIModel(
                     model,
                     provider=get_openai_provider(api_key=api_keys.openai_api_key),
                 ),
-                model_settings=ModelSettings(temperature=1.0),
             ),
             include_reasoning=True,
             logger=logger,
@@ -699,8 +731,8 @@ class DeployablePredictionProphetGPTo1(DeployableTraderAgentER):
 
     def load(self) -> None:
         super().load()
-        # o1 supports only temperature=1.0
-        model = "o1-2024-12-17"
+        # Switched from o1 to GPT-5 per repo-wide consolidation
+        model = "gpt-5"
         api_keys = APIKeys()
 
         self.agent = PredictionProphetAgent(
@@ -709,14 +741,12 @@ class DeployablePredictionProphetGPTo1(DeployableTraderAgentER):
                     model,
                     provider=get_openai_provider(api_key=api_keys.openai_api_key),
                 ),
-                model_settings=ModelSettings(temperature=1.0),
             ),
             prediction_agent=Agent(
                 OpenAIModel(
                     model,
                     provider=get_openai_provider(api_key=api_keys.openai_api_key),
                 ),
-                model_settings=ModelSettings(temperature=1.0),
             ),
             include_reasoning=True,
             logger=logger,
@@ -737,8 +767,8 @@ class DeployablePredictionProphetGPTo3mini(DeployableTraderAgentER):
 
     def load(self) -> None:
         super().load()
-        # o3-mini supports only temperature=1.0
-        model = "o3-mini-2025-01-31"
+        # Switched from o3-mini to GPT-5 per repo-wide consolidation
+        model = "gpt-5"
         api_keys = APIKeys()
 
         self.agent = PredictionProphetAgent(
@@ -747,14 +777,12 @@ class DeployablePredictionProphetGPTo3mini(DeployableTraderAgentER):
                     model,
                     provider=get_openai_provider(api_key=api_keys.openai_api_key),
                 ),
-                model_settings=ModelSettings(temperature=1.0),
             ),
             prediction_agent=Agent(
                 OpenAIModel(
                     model,
                     provider=get_openai_provider(api_key=api_keys.openai_api_key),
                 ),
-                model_settings=ModelSettings(temperature=1.0),
             ),
             include_reasoning=True,
             logger=logger,

@@ -60,7 +60,7 @@ def mark_markets_traded(primary_market_id: str, related_market_id: str) -> None:
 class DeployableArbitrageAgent(DeployableTraderAgent):
     """Agent that places mirror bets on Omen for (quasi) risk-neutral profit."""
 
-    model = "gpt-4o"
+    model = "gpt-5"
     # trade amount will be divided between correlated markets.
     total_trade_amount = USD(0.1)
     bet_on_n_markets_per_run = 5
@@ -83,7 +83,6 @@ class DeployableArbitrageAgent(DeployableTraderAgent):
 
     def _build_chain(self) -> RunnableSerializable[t.Any, t.Any]:
         llm = ChatOpenAI(
-            temperature=0,
             model_name=self.model,
             openai_api_key=APIKeys().openai_api_key,
         )

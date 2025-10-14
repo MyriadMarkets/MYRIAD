@@ -76,9 +76,12 @@ from prediction_market_agent.utils import OPENROUTER_BASE_URL, APIKeys
 
 
 class SupportedModel(str, Enum):
-    gpt_4o = "gpt-4o-2024-08-06"
-    gpt_4o_mini = "gpt-4o-mini-2024-07-18"
-    gpt_4_turbo = "gpt-4-turbo"
+    gpt_5 = "gpt-5"
+    gpt_5_mini = "gpt-5-mini"
+    gpt_5_nano = "gpt-5-nano"
+    gpt_4o = "gpt-4o-2024-08-06"  # Legacy support
+    gpt_4o_mini = "gpt-4o-mini-2024-07-18"  # Legacy support
+    gpt_4_turbo = "gpt-4-turbo"  # Legacy support
     llama_31_instruct = "meta/meta-llama-3.1-405b-instruct"
     deepseek_chat = "deepseek/deepseek-chat"
     deepseek_r1 = "deepseek/deepseek-r1"

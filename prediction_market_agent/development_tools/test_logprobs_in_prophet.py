@@ -39,7 +39,7 @@ from prediction_market_agent.development_tools.test_single_agent import (
 
 app = typer.Typer()
 
-GPT_4O_MODEL = "gpt-4o-2024-08-06"
+GPT_4O_MODEL = "gpt-5"
 
 
 def make_prediction_local(

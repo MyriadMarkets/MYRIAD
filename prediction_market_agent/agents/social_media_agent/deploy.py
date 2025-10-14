@@ -28,7 +28,7 @@ from prediction_market_agent.utils import APIKeys
 
 
 class DeployableSocialMediaAgent(DeployableAgent):
-    model: str = "gpt-4-turbo-2024-04-09"
+    model: str = "gpt-5"
     social_media_handlers: list[AbstractSocialMediaHandler] = []
 
     def load(self) -> None:

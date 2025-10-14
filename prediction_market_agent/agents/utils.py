@@ -126,8 +126,7 @@ def memories_to_learnings(
 @observe()
 def get_event_date_from_question(question: str) -> DatetimeUTC | None:
     llm = ChatOpenAI(
-        model_name="gpt-4-turbo",
-        temperature=0.0,
+        model_name="gpt-5",
         openai_api_key=APIKeys().openai_api_key,
     )
     event_date_str = str(

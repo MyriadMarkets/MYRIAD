@@ -57,7 +57,7 @@ class CallbackReturn(Enum):
 
 class DeployableMicrochainAgentAbstract(DeployableAgent, metaclass=abc.ABCMeta):
     # Setup per-agent class.
-    model = SupportedModel.gpt_4o
+    model = SupportedModel.gpt_5
     max_iterations: int | None = 50
     import_actions_from_memory = 0
     import_actions_from_memory_from: DatetimeUTC | None = None
@@ -321,7 +321,7 @@ class DeployableMicrochainModifiableSystemPromptAgent3(
 
 class DeployableMicrochainWithGoalManagerAgent0(DeployableMicrochainAgent):
     identifier = MICROCHAIN_AGENT_OMEN_WITH_GOAL_MANAGER
-    model = SupportedModel.gpt_4o
+    model = SupportedModel.gpt_5
     functions_config = TRADING_AGENT_SYSTEM_PROMPT_MINIMAL_CONFIG.functions_config
     initial_system_prompt = TRADING_AGENT_SYSTEM_PROMPT_MINIMAL_CONFIG.system_prompt
 

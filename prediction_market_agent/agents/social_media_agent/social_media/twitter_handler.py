@@ -21,7 +21,7 @@ class TwitterHandler(AbstractSocialMediaHandler):
     llm: BaseChatModel
 
     def __init__(
-        self, model: str = "gpt-4-turbo", keys: SocialMediaAPIKeys | None = None
+        self, model: str = "gpt-5", keys: SocialMediaAPIKeys | None = None
     ) -> None:
         if keys is None:
             keys = SocialMediaAPIKeys()

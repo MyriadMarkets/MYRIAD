@@ -53,10 +53,9 @@ class GPTRAgent(DeployableTraderAgent):
             additional_information=report,
             agent=Agent(
                 OpenAIModel(
-                    "gpt-4o",
+                    "gpt-5",
                     provider=get_openai_provider(api_key=APIKeys().openai_api_key),
                 ),
-                model_settings=ModelSettings(temperature=0),
             ),
             include_reasoning=True,
         )

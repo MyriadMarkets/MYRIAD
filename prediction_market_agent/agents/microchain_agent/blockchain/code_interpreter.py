@@ -28,7 +28,7 @@ class CodeInterpreter:
     prompt_and_model: RunnableSerializable[dict[Any, Any], Any]
 
     def __init__(
-        self, source_code: str, summarization_model: str = "gpt-4-turbo"
+        self, source_code: str, summarization_model: str = "gpt-5"
     ) -> None:
         self.summarization_model = summarization_model
         self.source_code = source_code

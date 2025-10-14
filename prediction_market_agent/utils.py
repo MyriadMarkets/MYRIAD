@@ -11,8 +11,7 @@ from pydantic import SecretStr
 from pydantic_ai.models import KnownModelName
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-# Do not update to a worse or more expensive model
-DEFAULT_OPENAI_MODEL: KnownModelName = "gpt-4o-2024-08-06"
+DEFAULT_OPENAI_MODEL: KnownModelName = "gpt-5"
 
 OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
 
@@ -248,3 +247,33 @@ def disable_crewai_telemetry() -> None:
     for attr in dir(Telemetry):
         if callable(getattr(Telemetry, attr)) and not attr.startswith("__"):
             setattr(Telemetry, attr, lambda *args, **kwargs: None)
+
+
+def patch_polymarket_clob_side_enum() -> None:
+    """
+    Fixes AttributeError in prediction_market_agent_tooling 0.69.6 where
+    place_buy/sell_market_order passes BUY/SELL string constants to _place_market_order
+    which expects PolymarketPriceSideEnum.
+    
+    Error: AttributeError: 'str' object has no attribute 'value'
+    Location: clob_manager.py line 114/118 passes BUY/SELL strings to _place_market_order
+    """
+    try:
+        import prediction_market_agent_tooling.markets.polymarket.clob_manager as clob_mod
+        
+        original_buy = clob_mod.ClobManager.place_buy_market_order
+        original_sell = clob_mod.ClobManager.place_sell_market_order
+        
+        def patched_place_buy(self, token_id: str, usdc_amount: clob_mod.USD):
+            # Convert BUY string to enum before calling _place_market_order
+            return self._place_market_order(token_id, usdc_amount.value, clob_mod.PolymarketPriceSideEnum.BUY)
+        
+        def patched_place_sell(self, token_id: str, outcome_token_amount: clob_mod.OutcomeToken):
+            # Convert SELL string to enum before calling _place_market_order
+            return self._place_market_order(token_id, outcome_token_amount.amount, clob_mod.PolymarketPriceSideEnum.SELL)
+        
+        clob_mod.ClobManager.place_buy_market_order = patched_place_buy
+        clob_mod.ClobManager.place_sell_market_order = patched_place_sell
+        logger.debug("Patched Polymarket CLOB manager BUY/SELL enum conversion.")
+    except Exception as e:
+        logger.warning(f"Could not patch CLOB manager: {e}")

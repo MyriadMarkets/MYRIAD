@@ -39,12 +39,9 @@ from prediction_market_agent.agents.known_outcome_agent.deploy import (
 )
 from prediction_market_agent.agents.prophet_agent.deploy import (
     DeployableOlasEmbeddingOAAgent,
-    DeployablePredictionProphetGPT4oAgent,
-    DeployablePredictionProphetGPT4oAgentScalar,
-    DeployablePredictionProphetGPT4TurboFinalAgent,
-    DeployablePredictionProphetGPT4TurboPreviewAgent,
-    DeployablePredictionProphetGPTo1MiniAgent,
-    DeployablePredictionProphetGPTo1PreviewAgent,
+    DeployableProphetBinary,
+    DeployableProphetCategorical,
+    DeployableProphetScalar,
 )
 from prediction_market_agent.agents.think_thoroughly_agent.deploy import (
     DeployableThinkThoroughlyAgent,
@@ -55,26 +52,20 @@ SupportedAgentType: t.TypeAlias = (
     type[DeployableKnownOutcomeAgent]
     | type[DeployableThinkThoroughlyAgent]
     | type[DeployableThinkThoroughlyProphetResearchAgent]
-    | type[DeployablePredictionProphetGPT4oAgent]
-    | type[DeployablePredictionProphetGPT4TurboPreviewAgent]
-    | type[DeployablePredictionProphetGPT4TurboFinalAgent]
+    | type[DeployableProphetBinary]
     | type[DeployableOlasEmbeddingOAAgent]
-    | type[DeployablePredictionProphetGPT4oAgentScalar]
-    | type[DeployablePredictionProphetGPTo1PreviewAgent]
-    | type[DeployablePredictionProphetGPTo1MiniAgent]
+    | type[DeployableProphetScalar]
+    | type[DeployableProphetCategorical]
 )
 
 AGENTS: list[SupportedAgentType] = [
     DeployableKnownOutcomeAgent,
     DeployableThinkThoroughlyAgent,
     DeployableThinkThoroughlyProphetResearchAgent,
-    DeployablePredictionProphetGPT4oAgent,
-    DeployablePredictionProphetGPT4TurboPreviewAgent,
-    DeployablePredictionProphetGPT4TurboFinalAgent,
+    DeployableProphetBinary,
+    DeployableProphetCategorical,
     DeployableOlasEmbeddingOAAgent,
-    DeployablePredictionProphetGPT4oAgentScalar,
-    DeployablePredictionProphetGPTo1PreviewAgent,
-    DeployablePredictionProphetGPTo1MiniAgent,
+    DeployableProphetScalar,
 ]
 
 add_sink_to_logger()

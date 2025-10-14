@@ -23,7 +23,7 @@ from prediction_market_agent.utils import APIKeys
 app = typer.Typer()
 
 
-GPT_4O_MODEL = "gpt-4o-2024-08-06"
+GPT_4O_MODEL = "gpt-5"
 
 
 def execute_prophet_research(

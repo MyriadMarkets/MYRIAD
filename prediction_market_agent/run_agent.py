@@ -14,6 +14,11 @@ from prediction_market_agent_tooling.deploy.agent import DeployableAgent
 from prediction_market_agent_tooling.loggers import patch_logger
 from prediction_market_agent_tooling.markets.markets import MarketType
 
+from prediction_market_agent.utils import patch_polymarket_clob_side_enum
+
+# Apply CLOB side enum fix before any agents import Polymarket modules
+patch_polymarket_clob_side_enum()
+
 from prediction_market_agent.agents.advanced_agent.deploy import AdvancedAgent
 from prediction_market_agent.agents.alert_agent.alert_on_slack import (
     PerformanceAlertAgent,
@@ -67,25 +72,8 @@ from prediction_market_agent.agents.ofvchallenger_agent.deploy import OFVChallen
 from prediction_market_agent.agents.omen_cleaner_agent.deploy import OmenCleanerAgent
 from prediction_market_agent.agents.prophet_agent.deploy import (
     DeployableOlasEmbeddingOAAgent,
-    DeployablePredictionProphetClaude3OpusAgent,
-    DeployablePredictionProphetClaude35HaikuAgent,
-    DeployablePredictionProphetClaude35SonnetAgent,
-    DeployablePredictionProphetDeepSeekChat,
-    DeployablePredictionProphetDeepSeekR1,
-    DeployablePredictionProphetGemini20Flash,
-    DeployablePredictionProphetGPT4oAgent,
-    DeployablePredictionProphetGPT4oAgent_B,
-    DeployablePredictionProphetGPT4oAgent_C,
-    DeployablePredictionProphetGPT4oAgentCategorical,
-    DeployablePredictionProphetGPT4oAgentNewMarketTrader,
-    DeployablePredictionProphetGPT4oAgentScalar,
-    DeployablePredictionProphetGPT4ominiAgent,
-    DeployablePredictionProphetGPT4TurboFinalAgent,
-    DeployablePredictionProphetGPT4TurboPreviewAgent,
-    DeployablePredictionProphetGPTo1,
-    DeployablePredictionProphetGPTo1MiniAgent,
-    DeployablePredictionProphetGPTo1PreviewAgent,
-    DeployablePredictionProphetGPTo3mini,
+    DeployableProphetBinary,
+    DeployableProphetCategorical,
 )
 from prediction_market_agent.agents.replicate_to_omen_agent.deploy import (
     DeployableReplicateToOmenAgent,
@@ -118,21 +106,9 @@ class RunnableAgent(str, Enum):
     microchain_modifiable_system_prompt_3 = "microchain_modifiable_system_prompt_3"
     microchain_with_goal_manager_agent_0 = "microchain_with_goal_manager_agent_0"
     metaculus_bot_tournament_agent = "metaculus_bot_tournament_agent"
-    prophet_gpt4o = "prophet_gpt4o"
-    prophet_gpt4o_b = "prophet_gpt4o_b"
-    prophet_gpt4o_c = "prophet_gpt4o_c"
-    prophet_gpt4o_categorical = "prophet_gpt4o_categorical"
-    prophet_gpt4o_new_market_trader = "prophet_gpt4o_new_market_trader"
-    prophet_gpt4 = "prophet_gpt4"
-    prophet_gpt4_final = "prophet_gpt4_final"
-    prophet_o1preview = "prophet_o1preview"
-    prophet_o1mini = "prophet_o1mini"
-    prophet_o1 = "prophet_o1"
-    prophet_o3mini = "prophet_o3mini"
-    prophet_gpt4omini = "prophet_gpt4omini"
-    prophet_gemini20flash = "prophet_gemini20flash"
-    prophet_deepseekchat = "prophet_deepseekchat"
-    prophet_deepseekr1 = "prophet_deepseekr1"
+    prophet_binary = "prophet_binary"
+    prophet_categorical = "prophet_categorical"
+    # prophet_scalar = "prophet_scalar"  # removed
     olas_embedding_oa = "olas_embedding_oa"
     # Social media (Farcaster + Twitter)
     social_media = "social_media"
@@ -149,9 +125,6 @@ class RunnableAgent(str, Enum):
     nft_treasury_game_agent_5 = "nft_treasury_game_agent_5"
     nft_treasury_game_agent_6 = "nft_treasury_game_agent_6"
     nft_treasury_game_agent_7 = "nft_treasury_game_agent_7"
-    prophet_claude3_opus = "prophet_claude3_opus"
-    prophet_claude35_haiku = "prophet_claude35_haiku"
-    prophet_claude35_sonnet = "prophet_claude35_sonnet"
     advanced_agent = "advanced_agent"
     gptr_agent = "gptr_agent"
     gptr_agent_highest_liquidity = "gptr_agent_highest_liquidity"
@@ -159,7 +132,6 @@ class RunnableAgent(str, Enum):
     berlin1_polysent_agent = "berlin1_polysent_agent"
     berlin2_search_high = "berlin2_search_high"
     berlin2_search_var = "berlin2_search_var"
-    prophet_gpt4o_scalar = "prophet_gpt4o_scalar"
     skew_agent = "skew_agent"
     performance_alert = "performance_alert"
 
@@ -180,19 +152,12 @@ RUNNABLE_AGENTS: dict[RunnableAgent, type[DeployableAgent]] = {
     RunnableAgent.microchain_with_goal_manager_agent_0: DeployableMicrochainWithGoalManagerAgent0,
     RunnableAgent.social_media: DeployableSocialMediaAgent,
     RunnableAgent.metaculus_bot_tournament_agent: DeployableMetaculusBotTournamentAgent,
-    RunnableAgent.prophet_gpt4o: DeployablePredictionProphetGPT4oAgent,
-    RunnableAgent.prophet_gpt4o_categorical: DeployablePredictionProphetGPT4oAgentCategorical,
-    RunnableAgent.prophet_gpt4o_new_market_trader: DeployablePredictionProphetGPT4oAgentNewMarketTrader,
-    RunnableAgent.prophet_gpt4: DeployablePredictionProphetGPT4TurboPreviewAgent,
-    RunnableAgent.prophet_gpt4_final: DeployablePredictionProphetGPT4TurboFinalAgent,
+    RunnableAgent.prophet_binary: DeployableProphetBinary,
+    RunnableAgent.prophet_categorical: DeployableProphetCategorical,
+    # RunnableAgent.prophet_scalar: DeployableProphetScalar,
     RunnableAgent.olas_embedding_oa: DeployableOlasEmbeddingOAAgent,
     RunnableAgent.omen_cleaner: OmenCleanerAgent,
     RunnableAgent.ofv_challenger: OFVChallengerAgent,
-    RunnableAgent.prophet_o1preview: DeployablePredictionProphetGPTo1PreviewAgent,
-    RunnableAgent.prophet_o1mini: DeployablePredictionProphetGPTo1MiniAgent,
-    RunnableAgent.prophet_o1: DeployablePredictionProphetGPTo1,
-    RunnableAgent.prophet_o3mini: DeployablePredictionProphetGPTo3mini,
-    RunnableAgent.prophet_gpt4omini: DeployablePredictionProphetGPT4ominiAgent,
     RunnableAgent.arbitrage: DeployableArbitrageAgent,
     RunnableAgent.market_creators_stalker1: MarketCreatorsStalkerAgent1,
     RunnableAgent.market_creators_stalker2: MarketCreatorsStalkerAgent2,
@@ -204,21 +169,13 @@ RUNNABLE_AGENTS: dict[RunnableAgent, type[DeployableAgent]] = {
     RunnableAgent.nft_treasury_game_agent_5: DeployableAgentNFTGame5,
     RunnableAgent.nft_treasury_game_agent_6: DeployableAgentNFTGame6,
     RunnableAgent.nft_treasury_game_agent_7: DeployableAgentNFTGame7,
-    RunnableAgent.prophet_claude3_opus: DeployablePredictionProphetClaude3OpusAgent,
-    RunnableAgent.prophet_claude35_haiku: DeployablePredictionProphetClaude35HaikuAgent,
-    RunnableAgent.prophet_claude35_sonnet: DeployablePredictionProphetClaude35SonnetAgent,
-    RunnableAgent.prophet_gpt4o_b: DeployablePredictionProphetGPT4oAgent_B,
-    RunnableAgent.prophet_gpt4o_c: DeployablePredictionProphetGPT4oAgent_C,
-    RunnableAgent.prophet_gemini20flash: DeployablePredictionProphetGemini20Flash,
-    RunnableAgent.prophet_deepseekr1: DeployablePredictionProphetDeepSeekR1,
-    RunnableAgent.prophet_deepseekchat: DeployablePredictionProphetDeepSeekChat,
+    # Removed legacy prophet variants (Claude/DeepSeek/Gemini/GPT4o_*), consolidated to GPT-5
     RunnableAgent.advanced_agent: AdvancedAgent,
     RunnableAgent.gptr_agent: GPTRAgent,
     RunnableAgent.gptr_agent_highest_liquidity: GPTRHighestLiquidityAgent,
     RunnableAgent.berlin1_polysent_agent: Berlin1PolySentAgent,
     RunnableAgent.berlin2_search_high: Berlin2OpenaiSearchAgentHigh,
     RunnableAgent.berlin2_search_var: Berlin2OpenaiSearchAgentVariable,
-    RunnableAgent.prophet_gpt4o_scalar: DeployablePredictionProphetGPT4oAgentScalar,
     RunnableAgent.skew_agent: SkewAgent,
     RunnableAgent.performance_alert: PerformanceAlertAgent,
 }
