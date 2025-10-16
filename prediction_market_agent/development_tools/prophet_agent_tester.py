@@ -80,7 +80,7 @@ class ProphetAgentTester:
         betting_strategy: BettingStrategy | None = None,
         use_old_research: bool = False,
         use_old_prediction: bool = False,
-        mocked_agent_name: str = "DeployablePredictionProphetGPT4oAgent",
+        mocked_agent_name: str = "DeployableProphetBinary",
         max_trades_to_test_on: int = 10,
         run_name: str = "test_prophet_agent_baseline",
         delay_between_trades: float = 0.5,

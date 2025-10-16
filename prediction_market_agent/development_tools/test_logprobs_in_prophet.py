@@ -173,8 +173,8 @@ def test_logprobs_agent(
         use_old_research=True,
         use_old_prediction=False,
         max_trades_to_test_on=max_trades_to_test_on,
-        run_name="test_logprobs_gpt4o_agent",
-        mocked_agent_name="DeployablePredictionProphetGPT4oAgent",
+        run_name="test_logprobs_gpt5_agent",
+        mocked_agent_name="DeployableProphetBinary",
         delay_between_trades=delay_between_trades,
     )
     standard_4o_tester = ProphetAgentTester(
@@ -184,8 +184,8 @@ def test_logprobs_agent(
         use_old_research=True,
         use_old_prediction=True,
         max_trades_to_test_on=max_trades_to_test_on,
-        run_name="test_gpt4o_agent",
-        mocked_agent_name="DeployablePredictionProphetGPT4oAgent",
+        run_name="test_gpt5_agent",
+        mocked_agent_name="DeployableProphetBinary",
         delay_between_trades=delay_between_trades,
     )
 

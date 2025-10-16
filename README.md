@@ -35,36 +35,17 @@ The on-chain activity of the deployed agents from this repo can be tracked on a 
 
 ## Running
 
-Execute `prediction_market_agent/run_agent.py`, specifying the ID of the 'runnable agent', and the market type as arguments:
+Execute `prediction_market_agent/run_agent.py`, specifying the ID of the runnable agent and the market type:
 
 ```bash
 % python prediction_market_agent/run_agent.py --help
 
- Usage: run_agent.py [OPTIONS] AGENT:{coinflip|replicate_to_omen|think_thorough                                         
-                     ly|think_thoroughly_prophet|think_thoroughly_prophet_kelly                                         
-                     |knownoutcome|microchain|microchain_modifiable_system_prom                                         
-                     pt_0|microchain_modifiable_system_prompt_1|microchain_modi                                         
-                     fiable_system_prompt_2|microchain_modifiable_system_prompt                                         
-                     _3|microchain_with_goal_manager_agent_0|metaculus_bot_tour                                         
-                     nament_agent|prophet_gpt4o|prophet_gpt4|prophet_gpt4_final                                         
-                     |prophet_gpt4_kelly|olas_embedding_oa|social_media|omen_cl                                         
-                     eaner|ofv_challenger}                                                                              
-                     MARKET_TYPE:{omen|manifold|polymarket|metaculus}                                                   
-                                                                                                                        
+ Usage: run_agent.py [OPTIONS] AGENT:{prophet_binary}
+                     MARKET_TYPE:{polymarket}
+
 ╭─ Arguments ──────────────────────────────────────────────────────────────────────────────────────────────────────────╮
-│ *    agent            AGENT:{coinflip|replicate_to_omen|think_thorou  [default: None] [required]                     │
-│                       ghly|think_thoroughly_prophet|think_thoroughly                                                 │
-│                       _prophet_kelly|knownoutcome|microchain|microch                                                 │
-│                       ain_modifiable_system_prompt_0|microchain_modi                                                 │
-│                       fiable_system_prompt_1|microchain_modifiable_s                                                 │
-│                       ystem_prompt_2|microchain_modifiable_system_pr                                                 │
-│                       ompt_3|microchain_with_goal_manager_agent_0|me                                                 │
-│                       taculus_bot_tournament_agent|prophet_gpt4o|pro                                                 │
-│                       phet_gpt4|prophet_gpt4_final|prophet_gpt4_kell                                                 │
-│                       y|olas_embedding_oa|social_media|omen_cleaner|                                                 │
-│                       ofv_challenger}                                                                                │
-│ *    market_type      MARKET_TYPE:{omen|manifold|polymarket|metaculu  [default: None] [required]                     │
-│                       s}                                                                                             │
+│ *    agent            AGENT:{prophet_binary}               [default: None] [required]                              │
+│ *    market_type      MARKET_TYPE:{polymarket}            [default: None] [required]                                 │
 ╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
 ╭─ Options ────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
 │ --install-completion          Install completion for the current shell.                                              │
@@ -72,12 +53,6 @@ Execute `prediction_market_agent/run_agent.py`, specifying the ID of the 'runnab
 │ --help                        Show this message and exit.                                                            │
 ╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
 ```
-
-## Deploying
-
-The easiest way to make your own agent that places a bet on a prediction market is to subclass the `DeployableTraderAgent`. See `DeployableCoinFlipAgent` for a minimal example.
-
-From there, you can add it to the `RUNNABLE_AGENTS` dict in `prediction_market_agent/run_agent.py`, and use that as the entrypoint for running the agent in your cloud deployment.
 
 ## Contributing
 

@@ -33,8 +33,8 @@ def _load_agent_class(import_path: str) -> Type[DeployableAgent]:
 
 def _iter_agent_definitions() -> Iterable[AgentDefinition]:
     yield AgentDefinition(
-        "advanced_agent",
-        "prediction_market_agent.agents.advanced_agent.deploy.AdvancedAgent",
+        "prophet_binary",
+        "prediction_market_agent.agents.prophet_agent.deploy.DeployableProphetBinary",
     )
 
 
