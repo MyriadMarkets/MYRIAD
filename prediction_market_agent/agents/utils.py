@@ -1,5 +1,6 @@
 from string import Template
 
+from typing import Any, TYPE_CHECKING
 from langchain.chains.summarize import load_summarize_chain
 from langchain_core.documents import Document
 from langchain_core.prompts import PromptTemplate
@@ -18,11 +19,20 @@ from prediction_market_agent_tooling.tools.langfuse_ import (
 )
 from prediction_market_agent_tooling.tools.utils import DatetimeUTC
 
-from prediction_market_agent.agents.microchain_agent.memory import (
-    DatedChatMessage,
-    SimpleMemoryThinkThoroughly,
-)
-from prediction_market_agent.agents.ofvchallenger_agent.ofv_models import Factuality
+if TYPE_CHECKING:
+    from prediction_market_agent.agents.microchain_agent.memory import (
+        DatedChatMessage,
+        SimpleMemoryThinkThoroughly,
+    )
+else:
+    DatedChatMessage = Any
+    SimpleMemoryThinkThoroughly = Any
+
+try:
+    from prediction_market_agent.agents.ofvchallenger_agent.ofv_models import Factuality  # type: ignore
+except ModuleNotFoundError:
+    Factuality = bool  # type: ignore[assignment]
+
 from prediction_market_agent.utils import DEFAULT_OPENAI_MODEL, APIKeys
 
 STREAMLIT_TAG = "streamlit"

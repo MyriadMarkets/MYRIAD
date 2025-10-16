@@ -27,10 +27,7 @@ WORKDIR /app
 COPY --from=builder ${VIRTUAL_ENV} ${VIRTUAL_ENV}
 
 COPY pyproject.toml poetry.lock ./
-COPY prediction_market_agent prediction_market_agent 
-COPY scripts scripts 
-COPY tests tests
-COPY tokenizers tokenizers
+COPY prediction_market_agent prediction_market_agent
 
 ENV PYTHONPATH=/app
 ENV PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python
@@ -40,4 +37,7 @@ ENV PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python
 ENV TRANSFORMERS_NO_ADVISORY_WARNINGS=1
 ENV LANGFUSE_DEPLOYMENT_VERSION=none
 
-CMD ["bash", "-c", "python prediction_market_agent/run_agent.py ${runnable_agent_name} ${market_type}"]
+ENV RUNNABLE_AGENT=prophet_binary \
+    MARKET_TYPE=polymarket
+
+CMD ["bash", "-c", "python prediction_market_agent/run_agent.py ${RUNNABLE_AGENT} ${MARKET_TYPE}"]
