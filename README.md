@@ -56,6 +56,6 @@ Execute `prediction_market_agent/run_agent.py`, specifying the ID of the runnabl
 
 ## Contributing
 
-See the [Issues](https://github.com/gnosis/prediction-market-agent/issues) for ideas of things that need fixing or implementing. The team is also receptive to new issues and PRs.
+See the [Issues](https://github.com/gnosis/prediction-market-agent/issues) for ideas of things that need fixing or implementing. 
 
 A great self-contained first contribution would be to implement an agent using a framework in the ['Other frameworks to try'](https://github.com/gnosis/prediction-market-agent/issues/210) issue.
