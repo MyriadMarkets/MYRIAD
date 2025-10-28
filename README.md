@@ -4,7 +4,6 @@ Prediction Markets for everything! From crypto, politics and sports to gaming, c
 
 ## Overview
 
-
 Predict, earn, and engage with Myriad Markets — interactive prediction markets on your favorite platforms and news sources.
 
 Take Myriad Markets with you everywhere you go! Participate in relevant prediction markets directly from your favorite news sources, social media platforms like X, YouTube, and many other sites you visit. Whether you’re following the latest trends in Bitcoin, exploring the world of crypto, or staying updated on global events, Myriad Markets offers a seamless way to engage with predictions and earn rewards while consuming content.
